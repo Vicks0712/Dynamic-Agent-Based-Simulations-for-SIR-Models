@@ -5,10 +5,12 @@ from src.back.models.BaseModel import BaseModel
 
 class SIRSModel(BaseModel):
     """Modelo SIRS."""
-    def __init__(self, *args, immunity_loss_chance: float = 0.1, initial_outbreak_size: int = 1, **kwargs):
+    def __init__(self, *args, immunity_loss_chance: float = 0.1,
+                 vaccine_loss_chance: float = 0.01, initial_outbreak_size: int = 1, **kwargs):
         # Configurar atributos específicos antes del constructor de la base
         self.immunity_loss_chance = immunity_loss_chance
         self.initial_outbreak_size = min(initial_outbreak_size, kwargs.get('num_nodes', 10))
+        self.vaccine_loss_chance = vaccine_loss_chance
         super().__init__(*args, **kwargs)
 
     def _create_agents(self):
@@ -23,7 +25,8 @@ class SIRSModel(BaseModel):
                 gain_resistance_chance=self.gain_resistance_chance,
                 immunity_loss_chance=self.immunity_loss_chance,
                 seed=self.seed,
-                vaccination_chance=self.vaccination_chance
+                vaccination_chance=self.vaccination_chance,
+                vaccine_loss_chance=self.vaccine_loss_chance
 
             )
             self.grid.place_agent(agent, node)

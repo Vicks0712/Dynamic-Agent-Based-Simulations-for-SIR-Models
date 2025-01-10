@@ -54,7 +54,7 @@ class BaseAgent(Agent, ABC):
 
     def _attempt_vaccination(self):
         """Intenta vacunar al agente."""
-        if self.random.random() < self.vaccination_chance and not self.was_infected:
+        if not self.was_infected:
             self._set_state(State.VACCINED)
 
     def _infect_neighbors(self):
