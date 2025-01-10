@@ -1,7 +1,7 @@
 from src.back.agents.BaseAgent import BaseAgent, State
 
 
-class SIRSVAgent(BaseAgent):
+class SIRSAgent(BaseAgent):
     """Modelo SIRSV."""
     def __init__(self, *args, immunity_loss_chance: float, **kwargs):
         super().__init__(*args, **kwargs)
@@ -11,10 +11,11 @@ class SIRSVAgent(BaseAgent):
         return State.INFECTED
 
     def _additional_steps(self):
+        """Chequeamos la pérdida de inmunidad si está en R."""
         if self.state == State.RECOVERED:
             self._check_immunity_loss()
 
     def _check_immunity_loss(self):
-        """Chequea si un agente pierde su inmunidad."""
+        """Si pierde la inmunidad, pasa de R a S."""
         if self.random.random() < self.immunity_loss_chance:
             self._set_state(State.SUSCEPTIBLE)

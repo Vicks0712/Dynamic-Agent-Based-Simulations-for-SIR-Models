@@ -17,9 +17,8 @@ class BaseModel(Model, ABC):
         virus_check_frequency: float,
         recovery_chance: float,
         gain_resistance_chance: float,
-        vaccination_rate: float,
-        vaccination_effectiveness: float,
-        vaccination_strategy: str = "Random",
+        vaccination_strategy: str = "random",  # Nueva estrategia
+        vaccination_chance: float = 0.0,  # Nuevo parámetro
         seed: int = None,
         **kwargs,  # Captura argumentos adicionales
     ):
@@ -30,9 +29,11 @@ class BaseModel(Model, ABC):
         self.virus_check_frequency = virus_check_frequency
         self.recovery_chance = recovery_chance
         self.gain_resistance_chance = gain_resistance_chance
-        self.vaccination_rate = vaccination_rate
-        self.vaccination_effectiveness = vaccination_effectiveness
+        self.seed = seed
+        self.vaccination_chance = vaccination_chance
         self.vaccination_strategy = vaccination_strategy
+
+
 
         # Inicializar red y agentes
         self._initialize_network()
@@ -51,6 +52,10 @@ class BaseModel(Model, ABC):
             agent.step()
         self.datacollector.collect(self)
 
+    def should_vaccinate(self) -> bool:
+        """Determina si ocurre vacunación en este paso."""
+        return self.random.random() < self.vaccination_chance
+
     @abstractmethod
     def _create_agents(self):
         """Método abstracto para inicializar agentes en el modelo."""
@@ -59,8 +64,26 @@ class BaseModel(Model, ABC):
     def _initialize_network(self):
         """Crea la red de nodos y la grilla."""
         prob = self.avg_node_degree / self.num_nodes
-        self.G = nx.erdos_renyi_graph(n=self.num_nodes, p=prob)
+        self.G = nx.erdos_renyi_graph(
+            n=self.num_nodes,
+            p=prob,
+            seed=self.seed  # <--- Usar la misma semilla que en MESA
+        )
         self.grid = NetworkGrid(self.G)
+
+
+    def _initialize_data_collector(self):
+        """Configura el recolector de datos."""
+        return DataCollector(
+            {
+                "Susceptible": lambda model: self.number_state(State.SUSCEPTIBLE),
+                "Infected": lambda model: self.number_state(State.INFECTED),
+                "Recovered": lambda model: self.number_state(State.RECOVERED),
+                "Exposed": lambda model: self.number_state(State.EXPOSED),
+                "Vaccined": lambda m: m.number_state(State.VACCINED),
+
+            }
+        )
 
     def _vaccinate_agents(self):
         """Vacuna a los agentes según la estrategia seleccionada."""
@@ -74,7 +97,7 @@ class BaseModel(Model, ABC):
         susceptible_agents = [
             agent for agent in self.grid.get_all_cell_contents() if agent.state == State.SUSCEPTIBLE
         ]
-        num_to_vaccinate = int(len(susceptible_agents) * self.vaccination_rate)
+        num_to_vaccinate = int(len(susceptible_agents) * self.vaccination_chance)
         agents_to_vaccinate = self.random.sample(susceptible_agents, num_to_vaccinate)
         for agent in agents_to_vaccinate:
             agent._attempt_vaccination()
@@ -87,26 +110,14 @@ class BaseModel(Model, ABC):
             for agent in self.grid.get_cell_list_contents([node])
             if agent.state == State.SUSCEPTIBLE
         ]
-        num_to_vaccinate = int(len(susceptible_agents) * self.vaccination_rate)
+        num_to_vaccinate = int(len(susceptible_agents) * self.vaccination_chance)
         for agent in susceptible_agents[:num_to_vaccinate]:
             agent._attempt_vaccination()
-
-    def _initialize_data_collector(self):
-        """Configura el recolector de datos."""
-        return DataCollector(
-            {
-                "Susceptible": lambda model: self.number_state(State.SUSCEPTIBLE),
-                "Infected": lambda model: self.number_state(State.INFECTED),
-                "Exposed": lambda model: self.number_state(State.EXPOSED),  # Añadido
-                "Resistant": lambda model: self.number_state(State.RECOVERED),
-                "Vaccinated": lambda model: self.number_state(State.VACCINATED),
-            }
-        )
 
     def number_state(self, state: State) -> int:
         """Cuenta el número de agentes en un estado específico."""
         return sum(1 for agent in self.grid.get_all_cell_contents() if agent.state == state)
 
-    def should_vaccinate(self) -> bool:
-        """Determina si ocurre vacunación en este paso."""
-        return self.random.random() < self.vaccination_rate
+
+
+

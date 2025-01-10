@@ -7,8 +7,8 @@ class State(Enum):
     SUSCEPTIBLE = 0
     INFECTED = 1
     RECOVERED = 2
-    VACCINATED = 3
-    EXPOSED = 4  # Opcional, usado en SEIRV y similares
+    EXPOSED = 3  # Opcional, usado en SEIRV y similares
+    VACCINED = 4  # ¡Nuevo estado!
 
 
 class BaseAgent(Agent, ABC):
@@ -22,7 +22,9 @@ class BaseAgent(Agent, ABC):
             virus_check_frequency: float,
             recovery_chance: float,
             gain_resistance_chance: float,
-            vaccination_effectiveness: float,
+            seed: int,
+            vaccination_chance: float,  # Probabilidad de vacunación
+
     ):
         super().__init__(model)
         self.state = initial_state
@@ -30,28 +32,39 @@ class BaseAgent(Agent, ABC):
         self.virus_check_frequency = virus_check_frequency
         self.recovery_chance = recovery_chance
         self.gain_resistance_chance = gain_resistance_chance
-        self.vaccination_effectiveness = vaccination_effectiveness
+        self.was_infected = False
+        self.is_vaccinated = False  # Por defecto, no vacunado
+        self.seed = seed
+        self.vaccination_chance = vaccination_chance
+
 
     def step(self):
         """Lógica común para todos los agentes."""
         if self.state == State.INFECTED:
             self._infect_neighbors()
-        elif self.state == State.SUSCEPTIBLE and self.model.should_vaccinate():
-            self._attempt_vaccination()
+            self.was_infected = True  # Marcar que este agente ha estado infectado
         self._check_health_status()
         self._additional_steps()  # Método para lógica específica
+
 
     @abstractmethod
     def _additional_steps(self):
         """Método abstracto para implementar lógica específica en subclases."""
         pass
 
+    def _attempt_vaccination(self):
+        """Intenta vacunar al agente."""
+        if self.random.random() < self.vaccination_chance and not self.was_infected:
+            self._set_state(State.VACCINED)
+
     def _infect_neighbors(self):
-        """Intenta infectar a los vecinos susceptibles."""
+        """Intenta infectar a los vecinos susceptibles, considerando si están vacunados."""
         neighbors = self._get_neighbors()
         for neighbor in neighbors:
-            if neighbor.state == State.SUSCEPTIBLE and self._should_infect():
-                neighbor._set_state(self._infection_state())
+            if neighbor.state == State.SUSCEPTIBLE:
+                if self._should_infect():
+                    neighbor._set_state(self._infection_state())
+                    neighbor.was_infected = True
 
     @abstractmethod
     def _infection_state(self) -> State:
@@ -64,16 +77,9 @@ class BaseAgent(Agent, ABC):
             self._attempt_recovery()
 
     def _attempt_recovery(self):
-        """Intenta recuperarse o ganar resistencia."""
+        """Si se recupera, pasa directamente a RECOVERED."""
         if self._should_recover():
-            self._set_state(State.SUSCEPTIBLE)
-            if self._should_gain_resistance():
-                self._set_state(State.RECOVERED)
-
-    def _attempt_vaccination(self):
-        """Intenta vacunar al agente."""
-        if self.random.random() < self.vaccination_effectiveness:
-            self._set_state(State.VACCINATED)
+            self._set_state(State.RECOVERED)
 
     def _get_neighbors(self):
         """Obtiene vecinos susceptibles."""
@@ -103,3 +109,4 @@ class BaseAgent(Agent, ABC):
     def _set_state(self, new_state: State):
         """Establece el estado del agente."""
         self.state = new_state
+

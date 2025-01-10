@@ -6,7 +6,7 @@ from src.webapp.views.sirv.components.Session import Session
 from src.webapp.views.sirv.components.SIRVGraph import SIRVGraph
 from src.webapp.views.sirv.components.PopulationGraph import PopulationGraph
 from src.back.agents.BaseAgent import State
-from src.back.models.sirv_model import SIRVModel
+from src.back.models.sir_model import SIRModel
 
 
 class SIRVModelView:
@@ -30,8 +30,8 @@ class SIRVModelView:
         self.params = Parameters("SIR Model").render()
 
     def create_model(self):
-        """Create a new SIRSV model with current parameters."""
-        return SIRVModel(
+        """Create a new SIRV model with current parameters."""
+        return SIRModel(
             num_nodes=self.params["Population (nodes)"],
             avg_node_degree=self.params["Average Node Degree"],
             initial_outbreak_size=self.params["Initial Infected Agents"],
@@ -50,12 +50,14 @@ class SIRVModelView:
         if st.session_state.sirsv_model is None:
             st.session_state.sirsv_model = self.create_model()
 
-            # Actualizar los datos iniciales del gráfico
-            model = st.session_state.sirsv_model
-            st.session_state.sirsv_data["Susceptible"].append(model.number_state(State.SUSCEPTIBLE))
-            st.session_state.sirsv_data["Infected"].append(model.number_state(State.INFECTED))
-            st.session_state.sirsv_data["Recovered"].append(model.number_state(State.RECOVERED))
-            st.session_state.sirsv_data["Vaccinated"].append(model.number_state(State.VACCINATED))
+        # Obtener el modelo inicial
+        model = st.session_state.sirsv_model
+
+        # Registrar los datos iniciales para el gráfico
+        st.session_state.sirsv_data["Susceptible"] = [model.number_state(State.SUSCEPTIBLE)]
+        st.session_state.sirsv_data["Infected"] = [model.number_state(State.INFECTED)]
+        st.session_state.sirsv_data["Recovered"] = [model.number_state(State.RECOVERED)]
+        st.session_state.sirsv_data["Vaccinated"] = [model.number_state(State.VACCINATED)]
 
     def update_sirsv_data(self):
         """Update the session state with new population data and print counts."""
@@ -84,7 +86,8 @@ class SIRVModelView:
 
     def initialize_graphs(self):
         """Initialize the graphs with the first render."""
-        self.update_graphs()
+        self.update_population_graph()  # Asegurarse de que los datos iniciales se muestren
+        self.update_network_graph()
 
     def update_network_graph(self):
         """Update only the network graph."""

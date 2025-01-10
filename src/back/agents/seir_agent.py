@@ -1,8 +1,8 @@
 from src.back.agents.BaseAgent import BaseAgent, State
 
 
-class SEIRVAgent(BaseAgent):
-    """Modelo SEIRV."""
+class SEIRAgent(BaseAgent):
+    """Modelo SEIR."""
     def __init__(self, *args, exposure_to_infection_chance: float, **kwargs):
         super().__init__(*args, **kwargs)
         self.exposure_to_infection_chance = exposure_to_infection_chance
@@ -15,6 +15,6 @@ class SEIRVAgent(BaseAgent):
             self._check_exposure()
 
     def _check_exposure(self):
-        """Chequea si un agente expuesto pasa a estar infectado."""
+        """Si está expuesto, con cierta probabilidad pasa a infectado."""
         if self.random.random() < self.exposure_to_infection_chance:
             self._set_state(State.INFECTED)

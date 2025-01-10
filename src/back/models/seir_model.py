@@ -1,12 +1,12 @@
 from src.back.agents.BaseAgent import State
-from src.back.agents.seirv_agent import SEIRVAgent
+from src.back.agents.seir_agent import SEIRAgent
 from src.back.models.BaseModel import BaseModel
 
 
-class SEIRVModel(BaseModel):
-    """Modelo SEIRV."""
-    def __init__(self, *args, exposure_to_infection_chance: float = 0.3, initial_exposed_size: int = 1, initial_infected_size: int = 1, **kwargs):
-        # Configurar atributos específicos antes del constructor de la clase base
+class SEIRModel(BaseModel):
+    """Modelo SEIR."""
+    def __init__(self, *args, exposure_to_infection_chance: float = 0.3,
+                 initial_exposed_size: int = 1, initial_infected_size: int = 1, **kwargs):
         self.exposure_to_infection_chance = exposure_to_infection_chance
         self.initial_exposed_size = min(initial_exposed_size, kwargs.get('num_nodes', 10))
         self.initial_infected_size = min(initial_infected_size, kwargs.get('num_nodes', 10))
@@ -15,7 +15,7 @@ class SEIRVModel(BaseModel):
     def _create_agents(self):
         """Crear y asignar agentes al modelo."""
         for node in self.G.nodes():
-            agent = SEIRVAgent(
+            agent = SEIRAgent(
                 model=self,
                 initial_state=State.SUSCEPTIBLE,
                 virus_spread_chance=self.virus_spread_chance,
@@ -23,7 +23,9 @@ class SEIRVModel(BaseModel):
                 exposure_to_infection_chance=self.exposure_to_infection_chance,
                 recovery_chance=self.recovery_chance,
                 gain_resistance_chance=self.gain_resistance_chance,
-                vaccination_effectiveness=self.vaccination_effectiveness,
+                seed=self.seed,
+                vaccination_chance=self.vaccination_chance
+
             )
             self.grid.place_agent(agent, node)
 

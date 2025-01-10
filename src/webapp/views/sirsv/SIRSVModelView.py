@@ -6,7 +6,7 @@ from src.webapp.views.sirv.components.Session import Session
 from src.webapp.views.sirv.components.SIRVGraph import SIRVGraph
 from src.webapp.views.sirv.components.PopulationGraph import PopulationGraph
 from src.back.agents.BaseAgent import State
-from src.back.models.sirsv_model import SIRSVModel
+from src.back.models.sirs_model import SIRSModel
 
 
 class SIRSVModelView:
@@ -30,7 +30,7 @@ class SIRSVModelView:
 
     def create_model(self):
         """Create a new SIRSV model with current parameters."""
-        return SIRSVModel(
+        return SIRSModel(
             num_nodes=self.params["Population (nodes)"],
             avg_node_degree=self.params["Average Node Degree"],
             initial_outbreak_size=self.params["Initial Infected Agents"],

@@ -6,7 +6,7 @@ from src.webapp.views.seirv.components.Parameters import Parameters
 from src.webapp.views.seirv.components.Session import Session
 from src.webapp.views.seirv.components.PopulationGraph import PopulationGraph
 from src.back.agents.BaseAgent import State
-from src.back.models.seirv_model import SEIRVModel
+from src.back.models.seir_model import SEIRModel
 
 
 class SEIRVModelView:
@@ -31,7 +31,7 @@ class SEIRVModelView:
     def create_model(self):
         """Create a new SEIRV model with current parameters."""
         print(self.params["Initial Infected Agents"])
-        return SEIRVModel(
+        return SEIRModel(
             num_nodes=self.params["Population (nodes)"],
             avg_node_degree=self.params["Average Node Degree"],
             initial_infected_size=self.params["Initial Infected Agents"],

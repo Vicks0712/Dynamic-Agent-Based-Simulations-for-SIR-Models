@@ -1,10 +1,10 @@
 from src.back.agents.BaseAgent import State
-from src.back.agents.sirsv_agent import SIRSVAgent
+from src.back.agents.sirs_agent import SIRSAgent
 from src.back.models.BaseModel import BaseModel
 
 
-class SIRSVModel(BaseModel):
-    """Modelo SIRSV."""
+class SIRSModel(BaseModel):
+    """Modelo SIRS."""
     def __init__(self, *args, immunity_loss_chance: float = 0.1, initial_outbreak_size: int = 1, **kwargs):
         # Configurar atributos específicos antes del constructor de la base
         self.immunity_loss_chance = immunity_loss_chance
@@ -14,7 +14,7 @@ class SIRSVModel(BaseModel):
     def _create_agents(self):
         """Crear y asignar agentes al modelo."""
         for node in self.G.nodes():
-            agent = SIRSVAgent(
+            agent = SIRSAgent(
                 model=self,
                 initial_state=State.SUSCEPTIBLE,
                 virus_spread_chance=self.virus_spread_chance,
@@ -22,7 +22,9 @@ class SIRSVModel(BaseModel):
                 recovery_chance=self.recovery_chance,
                 gain_resistance_chance=self.gain_resistance_chance,
                 immunity_loss_chance=self.immunity_loss_chance,
-                vaccination_effectiveness=self.vaccination_effectiveness,
+                seed=self.seed,
+                vaccination_chance=self.vaccination_chance
+
             )
             self.grid.place_agent(agent, node)
 
