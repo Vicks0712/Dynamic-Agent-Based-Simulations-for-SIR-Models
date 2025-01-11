@@ -19,7 +19,7 @@ class SideBar:
             st.image(SideBar._PROJECT_PATH + "/src/webapp/assets/siani.png", use_container_width=True)
             app = option_menu(
                 menu_title="Menu",
-                options=[ "Home","SIRV Model", "SIRSV Model", "SEIRV Model"],
+                options=[ "Home","SIR Model", "SIRS Model", "SEIR Model"],
                 icons=["house-fill", "virus", "virus", "virus"],
                 menu_icon="menu-button-wide-fill",
                 default_index=0,

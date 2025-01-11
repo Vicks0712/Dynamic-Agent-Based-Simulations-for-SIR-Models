@@ -80,7 +80,7 @@ class BaseModel(Model, ABC):
                 "Infected": lambda model: self.number_state(State.INFECTED),
                 "Recovered": lambda model: self.number_state(State.RECOVERED),
                 "Exposed": lambda model: self.number_state(State.EXPOSED),
-                "Vaccined": lambda m: m.number_state(State.VACCINED),
+                "Vaccinated": lambda m: m.number_state(State.VACCINATED),
 
             }
         )
@@ -91,28 +91,37 @@ class BaseModel(Model, ABC):
             self._random_vaccination()
         elif self.vaccination_strategy == "Most Popular":
             self._most_popular_vaccination()
+        else:
+            raise Exception("no va miloko")
 
     def _random_vaccination(self):
         """Vacuna aleatoriamente a agentes susceptibles."""
         susceptible_agents = [
-            agent for agent in self.grid.get_all_cell_contents() if agent.state == State.SUSCEPTIBLE
+            agent for agent in self.grid.get_all_cell_contents()
+            if agent.state == State.SUSCEPTIBLE
         ]
-        num_to_vaccinate = int(len(susceptible_agents) * self.vaccination_chance)
-        agents_to_vaccinate = self.random.sample(susceptible_agents, num_to_vaccinate)
-        for agent in agents_to_vaccinate:
-            agent._attempt_vaccination()
+
+        for agent in susceptible_agents:
+            # Con probabilidad "vaccination_chance" se vacuna:
+            if self.random.random() < self.vaccination_chance:
+                agent._attempt_vaccination()
 
     def _most_popular_vaccination(self):
         """Vacuna a los agentes susceptibles más conectados."""
+        # Ordenar nodos por su grado (popularidad), de mayor a menor
         sorted_nodes = sorted(self.G.degree, key=lambda x: x[1], reverse=True)
+
+        # Obtener los agentes susceptibles en orden de popularidad
         susceptible_agents = [
             agent for node, _ in sorted_nodes
             for agent in self.grid.get_cell_list_contents([node])
             if agent.state == State.SUSCEPTIBLE
         ]
-        num_to_vaccinate = int(len(susceptible_agents) * self.vaccination_chance)
-        for agent in susceptible_agents[:num_to_vaccinate]:
-            agent._attempt_vaccination()
+
+        # Intentar vacunar a cada agente según la probabilidad de vacunación
+        for agent in susceptible_agents:
+            if self.random.random() < self.vaccination_chance:
+                agent._attempt_vaccination()
 
     def number_state(self, state: State) -> int:
         """Cuenta el número de agentes en un estado específico."""

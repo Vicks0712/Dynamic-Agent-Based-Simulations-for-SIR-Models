@@ -1,9 +1,9 @@
 import streamlit as st
 from src.webapp.static_components.SideBar import SideBar
 from src.webapp.views.default.DefaultView import DefaultView
-from src.webapp.views.seirv.SEIRVModelView import SEIRVModelView
-from src.webapp.views.sirsv.SIRSVModelView import SIRSVModelView
-from src.webapp.views.sirv.SIRVModelView import SIRVModelView
+from src.webapp.views.seir.SEIRModelView import SEIRModelView
+from src.webapp.views.sirs.SIRSModelView import SIRSModelView
+from src.webapp.views.sir.SIRModelView import SIRModelView
 
 st.set_page_config(
     page_title="Virus Simulation Suite",
@@ -23,12 +23,12 @@ class MultiApp:
         """Run the main application."""
         app = SideBar.sidebar()
 
-        if app == "SIRV Model":
-            SIRVModelView().run()
-        if app == "SIRSV Model":
-            SIRSVModelView().run()
-        if app == "SEIRV Model":
-            SEIRVModelView().run()
+        if app == "SIR Model":
+            SIRModelView().run()
+        if app == "SIRS Model":
+            SIRSModelView().run()
+        if app == "SEIR Model":
+            SEIRModelView().run()
         if app == "Home":
             DefaultView().run()
         if app == "About":

@@ -8,7 +8,7 @@ class State(Enum):
     INFECTED = 1
     RECOVERED = 2
     EXPOSED = 3  # Opcional, usado en SEIRV y similares
-    VACCINED = 4  # ¡Nuevo estado!
+    VACCINATED = 4  # ¡Nuevo estado!
 
 
 class BaseAgent(Agent, ABC):
@@ -55,7 +55,7 @@ class BaseAgent(Agent, ABC):
     def _attempt_vaccination(self):
         """Intenta vacunar al agente."""
         if not self.was_infected:
-            self._set_state(State.VACCINED)
+            self._set_state(State.VACCINATED)
 
     def _infect_neighbors(self):
         """Intenta infectar a los vecinos susceptibles, considerando si están vacunados."""
