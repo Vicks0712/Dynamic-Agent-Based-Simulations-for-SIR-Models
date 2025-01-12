@@ -1,7 +1,8 @@
 # Agent-Based Epidemiological Models Simulator
-[![My Skills](https://skillicons.dev/icons?i=python,streamlit,github)](https://skillicons.dev)
-<img src="https://seeklogo.com/images/M/mesa-logo-D1E3C6D2EF-seeklogo.com.png" alt="Mesa Logo" width="50" style="margin-left: 5px">
-<img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Matplotlib_icon.svg" alt="Matplotlib Logo" width="50" style="margin-left: 5px">
+[![My Skills](https://skillicons.dev/icons?i=python,github)](https://skillicons.dev)
+<img src="https://raw.githubusercontent.com/projectmesa/mesa/main/docs/images/mesa_logo.png" alt="Mesa Logo" width="50" style="margin-left: 5px">
+<img src="https://streamlit.io/images/brand/streamlit-mark-color.png" alt="Streamlit Logo" width="50" style="margin-left: 5px">
+
 
 This project implements a simulator for epidemiological models using agent-based programming. It allows the analysis of infectious disease dynamics under various scenarios, such as immunity loss, incubation periods, and vaccination strategies.
 
@@ -16,10 +17,7 @@ This project implements a simulator for epidemiological models using agent-based
 3. [Features](#features)
 4. [System Requirements](#system-requirements)
 5. [Project Structure](#project-structure)
-6. [Example Code](#example-code)
-7. [Future Work](#future-work)
-8. [Contact](#contact)
-9. [License](#license)
+
 
 
 
@@ -27,8 +25,8 @@ This project implements a simulator for epidemiological models using agent-based
 
 The simulator supports the following models:
 
-1. **SIR(V):** Classic spread model with vaccination.
-2. **SIRS:** Includes immunity loss, with and without vaccination.
+1. **SIR(V):** Classic spread model with and without vaccination.
+2. **SIRS(V):** Includes immunity loss, with vaccination.
 3. **SEIR(V):** Considers an incubation period before active infection, with targeted or random vaccination strategies.
 
 Each model is highly configurable and allows adjustment of parameters such as transmission rates, recovery rates, immunity loss, and vaccination strategies.
@@ -64,8 +62,8 @@ The simulation generates graphs showing:
 - Temporal evolution of states (\( S, E, I, R, V \)).
 - Population network with nodes colored by their state.
 
-![img.png](img.png)
 
+![image](https://github.com/user-attachments/assets/5c00588a-6b80-4fba-ae87-cec7d65a53f8)
 
 
 ## Features
@@ -99,7 +97,6 @@ pip install -r requirements.txt
 ## Project Structure
 
 ```
-.
 ├── src
 │   ├── back
 │   │   ├── agents
