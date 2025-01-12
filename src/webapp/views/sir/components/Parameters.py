@@ -16,8 +16,9 @@ class Parameters:
         "Vaccination Chance": (0.0, 1.0, 0.05, 0.05),
         "Random Seed": 42,
         "Steps": 50,
-        "Graph Layout": ["spring", "circular", "kamada-kawai"],
         "Vaccination Strategy": ["Random", "Most Popular"],
+        "Population Structure": ["circular", "erdos_renyi"],
+
     }
 
     def __init__(self, model_name, default_params=None):

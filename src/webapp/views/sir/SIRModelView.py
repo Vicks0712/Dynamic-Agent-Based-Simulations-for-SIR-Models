@@ -3,7 +3,7 @@ from src.webapp.views.sir.components.Animation import Animation
 from src.webapp.views.sir.components.Controls import Controls
 from src.webapp.views.sir.components.Parameters import Parameters
 from src.webapp.views.sir.components.Session import Session
-from src.webapp.views.sir.components.SIRVGraph import SIRVGraph
+from src.webapp.views.sir.components.SIRGraph import SIRGraph
 from src.webapp.views.sir.components.PopulationGraph import PopulationGraph
 from src.back.agents.BaseAgent import State
 from src.back.models.SIRModel import SIRModel
@@ -21,9 +21,9 @@ class SIRModelView:
 
     def initialize_view(self):
         """Set up the initial view with title, description, and parameters."""
-        st.title("SIRV Model Simulation 🦠")
+        st.title("SIR Model Simulation 🦠")
         st.subheader(
-            "Simulate the spread of a sir in a network using the SIRV model. "
+            "Simulate the spread of a sir in a network using the SIR model. "
             "Adjust the parameters to observe how the different states propagates over time."
         )
         Session.initialize_session(Parameters.DEFAULT_PARAMS)
@@ -42,6 +42,7 @@ class SIRModelView:
             vaccination_chance=self.params["Vaccination Chance"],
             vaccination_strategy=self.params["Vaccination Strategy"],
             seed=self.params["Random Seed"],
+            population_structure=self.params["Population Structure"],
         )
 
     def initialize_model(self):
@@ -74,7 +75,7 @@ class SIRModelView:
 
     def update_graphs(self):
         """Update both the network and population graphs."""
-        self.graph_placeholder.pyplot(SIRVGraph.plot(st.session_state.sirsv_model, self.params["Graph Layout"]))
+        self.graph_placeholder.pyplot(SIRGraph.plot(st.session_state.sirsv_model, self.params["Population Structure"]))
         self.sir_placeholder.pyplot(PopulationGraph.plot(st.session_state.sirsv_data, title="SIR Model Population Dynamics"))
 
     def render_graph_placeholders(self):
@@ -90,7 +91,7 @@ class SIRModelView:
 
     def update_network_graph(self):
         """Update only the network graph."""
-        self.graph_placeholder.pyplot(SIRVGraph.plot(st.session_state.sirsv_model, self.params["Graph Layout"]))
+        self.graph_placeholder.pyplot(SIRGraph.plot(st.session_state.sirsv_model, self.params["Population Structure"]))
 
     def update_population_graph(self):
         """Update only the population graph."""

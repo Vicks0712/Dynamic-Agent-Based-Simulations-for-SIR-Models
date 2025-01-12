@@ -18,6 +18,7 @@ class BaseModel(Model, ABC):
         recovery_chance: float,
         gain_resistance_chance: float,
         vaccination_strategy: str = "random",  # Nueva estrategia
+        population_structure: str = "erdos_renyi",
         vaccination_chance: float = 0.0,  # Nuevo parámetro
         seed: int = None,
         **kwargs,  # Captura argumentos adicionales
@@ -32,6 +33,7 @@ class BaseModel(Model, ABC):
         self.seed = seed
         self.vaccination_chance = vaccination_chance
         self.vaccination_strategy = vaccination_strategy
+        self.population_structure = population_structure
 
 
 
@@ -62,15 +64,22 @@ class BaseModel(Model, ABC):
         pass
 
     def _initialize_network(self):
-        """Crea la red de nodos y la grilla."""
-        prob = self.avg_node_degree / self.num_nodes
-        self.G = nx.erdos_renyi_graph(
-            n=self.num_nodes,
-            p=prob,
-            seed=self.seed  # <--- Usar la misma semilla que en MESA
-        )
-        self.grid = NetworkGrid(self.G)
+        graph_generators = {
+            "erdos_renyi": lambda: nx.erdos_renyi_graph(
+                n=self.num_nodes, p=self.avg_node_degree / self.num_nodes, seed=self.seed
+            ),
+            "circular": lambda: nx.cycle_graph(self.num_nodes),
+        }
 
+        # Verificar si la estructura seleccionada es válida
+        if self.population_structure not in graph_generators:
+            raise ValueError(
+                f"Estructura de población no soportada: {self.population_structure}"
+            )
+
+        # Generar el grafo según la estructura seleccionada
+        self.G = graph_generators[self.population_structure]()
+        self.grid = NetworkGrid(self.G)
 
     def _initialize_data_collector(self):
         """Configura el recolector de datos."""
@@ -98,7 +107,7 @@ class BaseModel(Model, ABC):
         """Vacuna aleatoriamente a agentes susceptibles."""
         susceptible_agents = [
             agent for agent in self.grid.get_all_cell_contents()
-            if agent.state == State.SUSCEPTIBLE
+            if agent.state == State.SUSCEPTIBLE or agent.state == State.EXPOSED
         ]
 
         for agent in susceptible_agents:

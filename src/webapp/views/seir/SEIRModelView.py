@@ -1,5 +1,5 @@
 import streamlit as st
-from src.webapp.views.seir.components.SEIRVGraph import SEIRVGraph
+from src.webapp.views.seir.components.SEIRGraph import SEIRGraph
 from src.webapp.views.seir.components.Animation import Animation
 from src.webapp.views.seir.components.Controls import Controls
 from src.webapp.views.seir.components.Parameters import Parameters
@@ -21,15 +21,16 @@ class SEIRModelView:
 
     def initialize_view(self):
         """Set up the initial view with title, description, and parameters."""
-        st.title("SEIRV Model Simulation 🦠")
+        st.title("SEIR Model Simulation 🦠")
         st.subheader(
-            "Simulate the spread of a sir in a network using the SEIRV model. Adjust the parameters to observe how the sir propagates over time."
+            "Simulate the spread of a sir in a network using the SEIR model. "
+            "Adjust the parameters to observe how the sir propagates over time."
         )
         Session.initialize_session(Parameters.DEFAULT_PARAMS)
-        self.params = Parameters("SIR Model").render()
+        self.params = Parameters("SEIR Model").render()
 
     def create_model(self):
-        """Create a new SEIRV model with current parameters."""
+        """Create a new SEIR model with current parameters."""
         return SEIRModel(
             num_nodes=self.params["Population (nodes)"],
             avg_node_degree=self.params["Average Node Degree"],
@@ -43,6 +44,7 @@ class SEIRModelView:
             vaccination_chance=self.params["Vaccination Chance"],
             vaccination_strategy=self.params["Vaccination Strategy"],
             seed=self.params["Random Seed"],
+            population_structure=self.params["Population Structure"],
         )
 
 
@@ -69,7 +71,7 @@ class SEIRModelView:
 
     def update_graphs(self):
         """Update both the network and population graphs."""
-        self.graph_placeholder.pyplot(SEIRVGraph.plot(st.session_state.seirv_model, self.params["Graph Layout"]))
+        self.graph_placeholder.pyplot(SEIRGraph.plot(st.session_state.seirv_model, self.params["Population Structure"]))
         self.seirv_placeholder.pyplot(PopulationGraph.plot(st.session_state.seirv_data))
 
     def render_graph_placeholders(self):
@@ -84,7 +86,7 @@ class SEIRModelView:
 
     def update_network_graph(self):
         """Update only the network graph."""
-        self.graph_placeholder.pyplot(SEIRVGraph.plot(st.session_state.seirv_model, self.params["Graph Layout"]))
+        self.graph_placeholder.pyplot(SEIRGraph.plot(st.session_state.seirv_model, self.params["Population Structure"]))
 
     def update_population_graph(self):
         """Update only the population graph."""
