@@ -48,7 +48,7 @@ class SIRGraph:
                         "orange" if state == State.INFECTED else
                         "lightblue" if state == State.SUSCEPTIBLE else
                         "green" if state == State.RECOVERED else
-                        "purple"
+                        "purple" #VACCINATED
                     )
                 else:
                     node_colors.append("gray")
@@ -64,5 +64,15 @@ class SIRGraph:
             node_size=200,
             edge_color="gray",
         )
+        legend_labels = {
+            "orange": "Infected (I)",
+            "lightblue": "Susceptible (S)",
+            "green": "Recovered (R)",
+            "purple": "Vaccinated (V)",
+        }
+        for color, label in legend_labels.items():
+            ax.plot([], [], color=color, label=label, marker='o', linestyle='None')
+
+        ax.legend(fontsize=4, loc="upper right")
         plt.close(fig)
         return fig

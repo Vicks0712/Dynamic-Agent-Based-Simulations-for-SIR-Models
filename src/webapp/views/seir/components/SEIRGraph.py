@@ -64,6 +64,16 @@ class SEIRGraph:
             node_size=200,
             edge_color="gray",
         )
-        ax.set_title("SEIRV Model Graph")
-        #plt.close(fig)
+        legend_labels = {
+            "orange": "Infected (I)",
+            "lightblue": "Susceptible (S)",
+            "green": "Recovered (R)",
+            "purple": "Vaccinated (V)",
+            "red": "Exposed (E)"
+        }
+        for color, label in legend_labels.items():
+            ax.plot([], [], color=color, label=label, marker='o', linestyle='None')
+
+        ax.legend(fontsize=4, loc="upper right")
+        plt.close(fig)
         return fig
