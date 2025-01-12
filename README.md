@@ -25,8 +25,8 @@ This project implements a simulator for epidemiological models using agent-based
 
 The simulator supports the following models:
 
-1. **SIR(V):** Classic spread model with vaccination.
-2. **SIRS:** Includes immunity loss, with and without vaccination.
+1. **SIR(V):** Classic spread model with and without vaccination.
+2. **SIRS(V):** Includes immunity loss, with vaccination.
 3. **SEIR(V):** Considers an incubation period before active infection, with targeted or random vaccination strategies.
 
 Each model is highly configurable and allows adjustment of parameters such as transmission rates, recovery rates, immunity loss, and vaccination strategies.
